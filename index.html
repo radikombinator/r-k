@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="cs" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rádio Kombinátor</title>
+    <style>
+        :root { --bg:#121212; --card-bg:#1e1e1e; --accent:#ff3333; --text:#e0e0e0; }
+        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:15px; }
+        .site-title { text-align:center; font-size:36px; font-weight:bold; letter-spacing:3px; margin:20px 0; color:white; text-shadow: 0 0 5px #ff3333, 0 0 15px #ff3333, 0 0 30px #ff0000; animation: neon 2s infinite alternate; }
+        @keyframes neon { from { text-shadow: 0 0 5px #ff3333, 0 0 15px #ff3333; } to { text-shadow: 0 0 20px #ff3333, 0 0 40px #ff0000, 0 0 60px #ff3333; } }
+        .shinto-box { border:2px solid var(--accent); padding:25px 15px; border-radius:10px; text-align:center; margin-bottom:25px; background:#000; }
+        .shinto-box h2 { margin:0 0 15px 0; color:var(--accent); }
+        .shinto-box iframe { width:100%; max-width:320px; height:120px; border:none; }
+        nav { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+        button { padding:10px 15px; background:#333; color:white; border:none; cursor:pointer; border-radius:5px; font-weight:bold; }
+        button:hover { background:var(--accent); }
+        #playerArea { background:var(--card-bg); padding:15px; border-radius:10px; margin-bottom:20px; display:none; border-left:5px solid var(--accent); }
+        #genresList { display:flex; flex-wrap:wrap; gap:5px; max-height:300px; overflow-y:auto; padding:10px; background:#000; border-radius:5px; margin-bottom:20px; }
+        #radioList { list-style:none; padding:0; display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:10px; }
+        .station-item { background:var(--card-bg); padding:10px; border-radius:5px; }
+    </style>
+</head>
+
+<body>
+    <div class="site-title">📻 RADIKOMBINATOR</div>
+    <div class="shinto-box">
+        <h2>📻 Rádio Shinto</h2>
+        <iframe src="http://Popik666.on-air.fm/" title="Rádio Shinto Player"></iframe>
+        <p style="margin-top:15px;">
+            <a href="https://popik666.on-air.fm" target="_blank" style="color:#ff3333; font-weight:bold; text-decoration:none;">🔗 Právě hraje – otevřít stránku</a>
+        </p>
+        <!-- Tlačítko podpory -->
+        <button onclick="window.open('https://skrill.me/rq/Petr', '_blank')" style="background:#ffcc00; color:#000; padding:10px 20px; border:none; border-radius:5px; font-weight:bold; cursor:pointer; margin-top:10px;">☕ PODPOŘIT PROJEKT</button>
+        <p style="color:#aaa;margin-top:15px;">✉ radikombinator@gmail.com</p>
+    </div>
+
+    <div id="playerArea">
+        <div id="playerLabel" style="margin-bottom: 10px; font-weight: bold;">Hraje: Nic</div>
+        <audio id="audioPlayer" controls autoplay style="width:100%"></audio>
+    </div>
+
+    <nav>
+        <button onclick="F_loadCZ()">🇨🇿 Česká Rádia</button>
+        <button onclick="F_indexWorld()">🌍 Indexovat Svět (TOP 500)</button>
+    </nav>
+    <div id="genresList"></div>
+    <ul id="radioList"></ul>
+
+    <script>
+        const API = "https://de1.api.radio-browser.info/json";
+        const CACHE = { byGenre: {} };
+        const C_LIST = document.getElementById('radioList');
+        const C_AUDIO = document.getElementById('audioPlayer');
+
+        async function F_loadCZ() {
+            C_LIST.innerHTML = "<li>Načítám česká rádia...</li>";
+            const res = await fetch(`${API}/stations/bycountrycodeexact/CZ`);
+            const data = await res.json();
+            const filtered = data.filter(s => !s.name.toLowerCase().includes("abdul"));
+            F_render(filtered.slice(0, 100));
+        }
+
+        async function F_indexWorld() {
+            C_LIST.innerHTML = "<li>⏳ Indexuji 12 000 stanic...</li>";
+            const res = await fetch(`${API}/stations/topclick/12000`);
+            const data = await res.json();
+            CACHE.byGenre = {};
+            data.forEach(s => {
+                if(s.tags) {
+                    s.tags.split(',').forEach(t => {
+                        let g = t.trim().toLowerCase();
+                        if(!CACHE.byGenre[g]) CACHE.byGenre[g] = [];
+                        CACHE.byGenre[g].push(s);
+                    });
+                }
+            });
+            const top500 = Object.keys(CACHE.byGenre).sort((a,b) => CACHE.byGenre[b].length - CACHE.byGenre[a].length).slice(0, 500);
+            document.getElementById('genresList').innerHTML = top500.map(g => `<button onclick="F_filter('${g}')">${g}</button>`).join('');
+            C_LIST.innerHTML = "<li>✅ Hotovo. Vyberte žánr.</li>";
+        }
+
+        function F_filter(genre) { F_render(CACHE.byGenre[genre].slice(0, 100)); }
+
+        function F_render(data) {
+            C_LIST.innerHTML = data.map(s => `
+                <li class="station-item">
+                    <strong>${s.name}</strong><br>
+                    <button style="margin-top:8px;" onclick="F_play('${s.url_resolved || s.url}', '${s.name}')">▶ Přehrát</button>
+                </li>
+            `).join('');
+        }
+
+        function F_play(url, name) {
+            document.getElementById('playerArea').style.display = 'block';
+            C_AUDIO.src = url.replace('http://', 'https://');
+            document.getElementById('playerLabel').textContent = "Hraje: " + name;
+            C_AUDIO.play();
+        }
+    </script>
+</body>
+</html>
