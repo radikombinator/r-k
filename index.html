@@ -1,726 +1,438 @@
 <!DOCTYPE html>
-
 <html lang="cs" data-theme="dark">
-
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rádio Shinto Terminal</title>
 
-<meta charset="UTF-8" />
+    <style>
+        :root { --bg:#121212; --card-bg:#1e1e1e; --accent:#ff3333; --text:#e0e0e0; }
+        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; }
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        .site-title { text-align:center; font-size:28px; font-weight:bold; margin:10px 0; color:white; }
 
-<title>Rádio Kombinátor</title>
+        .shinto-box { border:1px solid var(--accent); padding:10px; border-radius:5px;
+            text-align:center; margin-bottom:10px; background:#000; }
+        .shinto-box h2 { margin:0 0 5px 0; font-size:18px; color:var(--accent); }
 
+        .apps-box { border:1px solid #444; background:#111; padding:10px; border-radius:5px; margin-bottom:10px; font-size:12px; }
+        .apps-box h3 { margin:0 0 8px 0; font-size:14px; color:var(--accent); text-align:center; }
+        .apps-grid { display:grid; grid-template-columns:1fr; gap:6px; }
+        .apps-row { background:#1a1a1a; padding:6px 8px; border-radius:3px; border-left:2px solid var(--accent); }
+        .apps-row a { color:#ff8888; text-decoration:underline; }
 
+        nav { display:flex; flex-direction:column; gap:5px; margin-bottom:10px; }
+        button { padding:8px; background:#333; color:white; border:none; cursor:pointer;
+            border-radius:3px; font-weight:bold; }
+        button:hover { background:var(--accent); }
 
-<style>
+        /* Tlačítko pro Televizi */
+        .tv-btn { background: #0055ff; margin-top: 5px; }
+        .tv-btn:hover { background: #3377ff; }
 
-:root { --bg:#121212; --card-bg:#1e1e1e; --accent:#ff3333; --text:#e0e0e0; }
+        #playerArea { background:var(--card-bg); padding:10px; border-radius:5px;
+            margin-bottom:10px; display:none; border-left:3px solid var(--accent); }
 
-body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; }
+        #genresList { display:flex; flex-wrap:wrap; gap:3px; max-height:200px; overflow-y:auto;
+            padding:5px; background:#000; border-radius:3px; margin-bottom:10px; }
 
+        #radioList { list-style:none; padding:0; display:grid; grid-template-columns:1fr; gap:5px; }
 
+        .station-item { background:var(--card-bg); padding:8px; border-radius:3px;
+            font-size:14px; display:flex; align-items:center; justify-content:space-between; }
 
-.site-title { text-align:center; font-size:28px; font-weight:bold; margin:10px 0; color:white; }
+        .station-name { flex:1; margin-right:8px; }
 
+        .station-actions { display:flex; gap:4px; }
 
+        .fav-btn { background:#555; }
+        .fav-btn.active { background:#ffcc00; color:#000; }
+        .del-btn { background:#ff3333; color:white; font-weight:bold; }
 
-.shinto-box { border:1px solid var(--accent); padding:10px; border-radius:5px;
+        #searchBar { margin-bottom:10px; display:flex; gap:5px; }
+        #searchInput { flex:1; padding:6px; border-radius:3px; border:1px solid #333;
+            background:#000; color:#e0e0e0; }
 
-text-align:center; margin-bottom:10px; background:#000; }
+        #modeButtons { display:flex; gap:5px; margin-bottom:10px; }
+        .mode-btn { flex:1; }
+        .mode-btn.active { background:var(--accent); }
 
-.shinto-box h2 { margin:0 0 5px 0; font-size:18px; color:var(--accent); }
-
-
-
-nav { display:flex; flex-direction:column; gap:5px; margin-bottom:10px; }
-
-button { padding:8px; background:#333; color:white; border:none; cursor:pointer;
-
-border-radius:3px; font-weight:bold; }
-
-button:hover { background:var(--accent); }
-
-
-
-#playerArea { background:var(--card-bg); padding:10px; border-radius:5px;
-
-margin-bottom:10px; display:none; border-left:3px solid var(--accent); }
-
-
-
-#genresList { display:flex; flex-wrap:wrap; gap:3px; max-height:200px; overflow-y:auto;
-
-padding:5px; background:#000; border-radius:3px; margin-bottom:10px; }
-
-
-
-#radioList { list-style:none; padding:0; display:grid; grid-template-columns:1fr; gap:5px; }
-
-
-
-.station-item { background:var(--card-bg); padding:8px; border-radius:3px;
-
-font-size:14px; display:flex; align-items:center; justify-content:space-between; }
-
-
-
-.station-name { flex:1; margin-right:8px; }
-
-
-
-.station-actions { display:flex; gap:4px; }
-
-
-
-.fav-btn { background:#555; }
-
-.fav-btn.active { background:#ffcc00; color:#000; }
-
-
-
-#searchBar { margin-bottom:10px; display:flex; gap:5px; }
-
-#searchInput { flex:1; padding:6px; border-radius:3px; border:1px solid #333;
-
-background:#000; color:#e0e0e0; }
-
-
-
-#modeButtons { display:flex; gap:5px; margin-bottom:10px; }
-
-.mode-btn { flex:1; }
-
-.mode-btn.active { background:var(--accent); }
-
-</style>
-
+        /* Kontejner pro TV (skrytý ve výchozím stavu) */
+        #tvArea { display: none; margin-bottom: 10px; background: #000; border: 1px solid #444; border-radius: 5px; padding: 10px; }
+        #tvArea iframe { width: 100%; height: 500px; border: none; background: #000; }
+        .close-tv { background: #ff3333; color: white; padding: 5px 10px; margin-bottom: 10px; cursor: pointer; border-radius: 3px; font-weight: bold; border: none; display: block; width: 100%; text-align: center; }
+    </style>
 </head>
-
-
 
 <body>
 
-
-
-<div class="site-title">📻 RADIKOMBINATOR</div>
-
-
-
-<div class="shinto-box">
-
-<h2>📻 Rádio Shinto</h2>
-
-<div style="max-width:300px;margin:0 auto;">
-
-<script src="//myradiostream.com/embed/Popik666"></script>
-
-</div>
-
-<p style="margin:5px 0 0 0;">
-
-<a href="https://popik666.on-air.fm" target="_blank"
-
-style="color:#ff3333; font-size:12px; text-decoration:none;">🔗 Právě hraje</a>
-
-</p>
-
-</div>
-
-
-
-<nav>
-
-<button onclick="F_loadCZ()">🇨🇿 Česká Rádia</button>
-
-<button onclick="F_indexWorld()">🌍 Indexovat Svět (TOP 20000)</button>
-
-</nav>
-
-
-
-<div id="modeButtons" style="display:none;">
-
-<button class="mode-btn active" id="modeGenreBtn" onclick="F_setMode('genre')">Žánry</button>
-
-<button class="mode-btn" id="modeFavBtn" onclick="F_setMode('fav')">Oblíbené ⭐</button>
-
-<button class="mode-btn" id="modeSearchBtn" onclick="F_setMode('search')">Vyhledávání 🔍</button>
-
-</div>
-
-
-
-<div id="searchBar" style="display:none;">
-
-<input id="searchInput" type="text" placeholder="Hledat podle názvu / žánru / země..." />
-
-<button onclick="F_doSearch()">OK</button>
-
-</div>
-
-
-
-<div id="playerArea">
-
-<div id="playerLabel" style="margin-bottom:5px; font-size:12px;">Hraje: Nic</div>
-
-<audio id="audioPlayer" controls autoplay style="width:100%; height:30px;"></audio>
-
-</div>
-
-
-
-<div id="genresList"></div>
-
-<ul id="radioList"></ul>
-
-
-
-<script>
-
-const ENDPOINTS = [
-
-"https://de1.api.radio-browser.info/json",
-
-"https://fr1.api.radio-browser.info/json",
-
-"https://nl1.api.radio-browser.info/json",
-
-"https://uk1.api.radio-browser.info/json"
-
-];
-
-
-
-const CACHE = { byGenre:{}, stations:[], favorites:[], currentList:[] };
-
-
-
-const C_LIST = document.getElementById('radioList');
-
-const C_AUDIO = document.getElementById('audioPlayer');
-
-const C_GENRES = document.getElementById('genresList');
-
-const C_MODE_BAR = document.getElementById('modeButtons');
-
-const C_SEARCH_BAR = document.getElementById('searchBar');
-
-const C_SEARCH_INPUT = document.getElementById('searchInput');
-
-
-
-let CURRENT_MODE = 'genre';
-
-
-
-/* ---------------- FAVORITES ---------------- */
-
-
-
-function loadFavorites() {
-
-try {
-
-CACHE.favorites = JSON.parse(localStorage.getItem('rk_favorites')) || [];
-
-} catch(e) { CACHE.favorites = []; }
-
-}
-
-
-
-function saveFavorites() {
-
-localStorage.setItem('rk_favorites', JSON.stringify(CACHE.favorites));
-
-}
-
-
-
-function isFavorite(station) {
-
-return CACHE.favorites.some(f => f.stationuuid === station.stationuuid);
-
-}
-
-
-
-function toggleFavorite(station) {
-
-if (isFavorite(station)) {
-
-CACHE.favorites = CACHE.favorites.filter(f => f.stationuuid !== station.stationuuid);
-
-} else {
-
-CACHE.favorites.push(station);
-
-}
-
-saveFavorites();
-
-if (CURRENT_MODE === 'fav') F_renderFavorites();
-
-else F_render(CACHE.currentList);
-
-}
-
-
-
-function F_toggleFav(uuid) {
-
-let s = CACHE.stations.find(x => x.stationuuid === uuid)
-
-|| CACHE.currentList.find(x => x.stationuuid === uuid)
-
-|| CACHE.favorites.find(x => x.stationuuid === uuid);
-
-if (!s) return;
-
-toggleFavorite(s);
-
-}
-
-
-
-/* ---------------- GENRE NORMALIZATION ---------------- */
-
-
-
-function normalizeTag(tag) {
-
-return tag.toLowerCase()
-
-.replace(/[\/\.\-\_]/g,"")
-
-.replace(/[0-9]/g,"")
-
-.replace(/\b(fm|radio|live|stream|online|hd)\b/g,"")
-
-.replace(/[^\w\s]/g,"")
-
-.replace(/\s+/g,"")
-
-.trim();
-
-}
-
-
-
-function unifyGenre(tag) {
-
-const MAP = {
-
-rock:["rock","altrock","alternativerock","indierock","hardrock","softrock","classicrock"],
-
-pop:["pop","dancepop","poprock"],
-
-metal:["metal","heavymetal","thrashmetal","blackmetal","deathmetal"],
-
-electronic:["electronic","edm","techno","house","trance","dnb","dubstep"],
-
-jazz:["jazz","smoothjazz","vintagejazz"],
-
-classical:["classical","orchestra","symphony"],
-
-hiphoprap:["hiphop","rap","trap"],
-
-news:["news","talk","speech"],
-
-folk:["folk","country"],
-
-ambient:["ambient","chill","relax","lofi"]
-
-};
-
-for (const main in MAP) {
-
-if (MAP[main].includes(tag)) return main;
-
-}
-
-return tag;
-
-}
-
-
-
-function processGenres(stations) {
-
-const genres = {};
-
-for (const s of stations) {
-
-if (!s.tags) continue;
-
-const rawTags = s.tags.split(",");
-
-for (let t of rawTags) {
-
-let g = normalizeTag(t);
-
-if (!g) continue;
-
-g = unifyGenre(g);
-
-if (!genres[g]) genres[g] = [];
-
-genres[g].push(s);
-
-}
-
-}
-
-return genres;
-
-}
-
-
-
-/* ---------------- MODES ---------------- */
-
-
-
-function F_setMode(mode) {
-
-CURRENT_MODE = mode;
-
-document.getElementById('modeGenreBtn').classList.toggle('active', mode==='genre');
-
-document.getElementById('modeFavBtn').classList.toggle('active', mode==='fav');
-
-document.getElementById('modeSearchBtn').classList.toggle('active', mode==='search');
-
-
-
-C_SEARCH_BAR.style.display = mode==='search' ? 'flex' : 'none';
-
-C_GENRES.style.display = mode==='genre' ? 'flex' : 'none';
-
-
-
-if (mode === 'fav') F_renderFavorites();
-
-if (mode === 'genre') C_LIST.innerHTML = "<li>Vyberte žánr.</li>";
-
-if (mode === 'search') C_LIST.innerHTML = "<li>Zadejte hledaný výraz.</li>";
-
-}
-
-
-
-/* ---------------- SEARCH ---------------- */
-
-
-
-function F_doSearch() {
-
-const q = C_SEARCH_INPUT.value.trim().toLowerCase();
-
-if (!q) { C_LIST.innerHTML = "<li>Zadejte hledaný výraz.</li>"; return; }
-
-
-
-const source = CACHE.currentList.length ? CACHE.currentList : CACHE.stations;
-
-
-
-const res = source.filter(s => {
-
-return (s.name||"").toLowerCase().includes(q)
-
-|| (s.country||"").toLowerCase().includes(q)
-
-|| (s.tags||"").toLowerCase().includes(q);
-
-}).slice(0,100);
-
-
-
-CACHE.currentList = res;
-
-F_render(res);
-
-}
-
-
-
-/* ---------------- LOAD CZ ---------------- */
-
-
-
-async function F_loadCZ() {
-
-C_LIST.innerHTML = "<li>Načítám...</li>";
-
-C_GENRES.style.display = 'none';
-
-C_MODE_BAR.style.display = 'none';
-
-
-
-try {
-
-const res = await fetch(`${ENDPOINTS[0]}/stations/bycountrycodeexact/CZ`);
-
-const data = await res.json();
-
-const filtered = data.filter(s => !s.name.toLowerCase().includes("abdul")).slice(0,50);
-
-CACHE.currentList = filtered;
-
-F_render(filtered);
-
-} catch(e) {
-
-C_LIST.innerHTML = "<li>Chyba načítání</li>";
-
-}
-
-}
-
-
-
-/* ---------------- INDEX WORLD (NEPRŮSTŘELNÉ) ---------------- */
-
-
-
-async function F_indexWorld() {
-
-C_LIST.innerHTML = "<li>⏳ Indexuji světové stanice (20 000)...</li>";
-
-C_GENRES.style.display = 'flex';
-
-C_MODE_BAR.style.display = 'flex';
-
-
-
-let data = null;
-
-
-
-try {
-
-// 1) Ochrana při čtení z mezipaměti
-
-const cached = localStorage.getItem('rk_world_20000');
-
-if (cached) {
-
-try {
-
-data = JSON.parse(cached);
-
-} catch (parseError) {
-
-console.log("Poškozená stará cache, mažu ji...");
-
-localStorage.removeItem('rk_world_20000');
-
-}
-
-}
-
-
-if (!data) {
-
-// 2) Stažení dat přes API
-
-for (const api of ENDPOINTS) {
-
-try {
-
-const res = await fetch(`${api}/stations/topclick/20000`);
-
-if (res.ok) {
-
-data = await res.json();
-
-break;
-
-}
-
-} catch (e) {
-
-console.log("API neodpovídá:", api);
-
-}
-
-}
-
-
-
-if (!data) {
-
-C_LIST.innerHTML = "<li>❌ Chyba indexace — žádný server neodpovídá.</li>";
-
-return;
-
-}
-
-
-
-// 3) Bezpečné uložení (chrání proti pádu při překročení limitu v prohlížeči)
-
-try {
-
-localStorage.setItem('rk_world_20000', JSON.stringify(data));
-
-} catch(err) {
-
-console.log("20 000 stanic je příliš velkých pro prohlížeč. Data držím bezpečně v RAM.");
-
-localStorage.removeItem('rk_world_20000');
-
-}
-
-}
-
-
-
-CACHE.stations = data;
-
-CACHE.byGenre = processGenres(data);
-
-
-
-C_GENRES.innerHTML = Object.keys(CACHE.byGenre)
-
-.sort()
-
-.map(g => `<button onclick="F_filter('${g}')">${g}</button>`)
-
-.join('');
-
-
-
-C_LIST.innerHTML = "<li>✅ Hotovo. Vyberte žánr.</li>";
-
-
-
-loadFavorites();
-
-
-
-} catch(e) {
-
-console.error(e);
-
-C_LIST.innerHTML = "<li>❌ Chyba indexace — zkus to znovu.</li>";
-
-}
-
-}
-
-
-
-function F_filter(genre) {
-
-const list = CACHE.byGenre[genre].slice(0,50);
-
-CACHE.currentList = list;
-
-F_render(list);
-
-}
-
-
-
-/* ---------------- RENDER ---------------- */
-
-
-
-function F_render(data) {
-
-C_LIST.innerHTML = data.map(s => {
-
-const url = s.url_resolved || s.url;
-
-const fav = isFavorite(s);
-
-return `
-
-<li class="station-item">
-
-<span class="station-name">${s.name}</span>
-
-<div class="station-actions">
-
-<button class="fav-btn ${fav?'active':''}" onclick="F_toggleFav('${s.stationuuid}')">⭐</button>
-
-<button onclick="F_play('${url}','${s.name.replace(/'/g,"\\'")}')">▶</button>
-
-</div>
-
-</li>`;
-
-}).join('');
-
-}
-
-
-
-function F_renderFavorites() {
-
-if (!CACHE.favorites.length) {
-
-C_LIST.innerHTML = "<li>Nemáte žádné oblíbené stanice.</li>";
-
-return;
-
-}
-
-
-
-const data = CACHE.favorites.slice(0,100);
-
-CACHE.currentList = data;
-
-
-
-C_LIST.innerHTML = data.map(s => `
-
-<li class="station-item">
-
-<span class="station-name">${s.name}</span>
-
-<div class="station-actions">
-
-<button class="fav-btn active" onclick="F_toggleFav('${s.stationuuid}')">⭐</button>
-
-<button onclick="F_play('${s.url_resolved || s.url}','${s.name.replace(/'/g,"\\'")}')">▶</button>
-
-</div>
-
-</li>
-
-`).join('');
-
-}
-
-
-
-/* ---------------- PLAY ---------------- */
-
-
-
-function F_play(url, name) {
-
-document.getElementById('playerArea').style.display = 'block';
-
-C_AUDIO.src = url;
-
-document.getElementById('playerLabel').textContent = "Hraje: " + name;
-
-C_AUDIO.play().catch(()=>{});
-
-}
-
-
-
-</script>
-
+    <div class="site-title">📻 SHINTO TERMINAL</div>
+
+    <div class="shinto-box">
+        <h2>📻 Rádio Shinto</h2>
+        <div style="max-width:300px;margin:0 auto;">
+            <script src="//myradiostream.com/embed/Popik666"></script>
+        </div>
+        
+        <!-- VYČIŠTĚNÉ ODKAZY -->
+        <div style="margin-top:8px; display:flex; justify-content:center; gap:8px;">
+            <a href="http://s49.myradiostream.com:8142/;" target="_blank" style="background:#222; color:#ff3333; padding:6px 12px; font-size:12px; text-decoration:none; border:1px solid #ff3333; border-radius:3px; font-weight:bold;">▶️ Přímý Stream (VLC / Hráče)</a>
+            <a href="https://popik666.on-air.fm" target="_blank" style="background:#222; color:#ff3333; padding:6px 12px; font-size:12px; text-decoration:none; border:1px solid #ff3333; border-radius:3px; font-weight:bold;">🔗 Právě hraje</a>
+        </div>
+    </div>
+
+    <!-- KOMPLETNÍ SEZNAM APLIKACÍ -->
+    <div class="apps-box">
+        <h3>📱 KDE NÁS NAJDETE</h3>
+        <p style="text-align:center; margin:0 0 8px 0;">V aplikacích vyhledejte název: <strong style="color:#fff; background:#222; padding:2px 6px; border-radius:3px;">Shinto</strong></p>
+        <div class="apps-grid">
+            <div class="apps-row">🤖 <strong>Android:</strong> <a href="https://play.google.com/store/apps/details?id=net.dhleong.m3u.player" target="_blank">RadioDroid</a>, <a href="https://f-droid.org/packages/org.y20k.transistor/" target="_blank">Transistor</a>, RadioMobi</div>
+            <div class="apps-row">🍏 <strong>iOS / Mac:</strong> <a href="https://apps.apple.com/app/froggy-radio/id1527843471" target="_blank">Froggy Radio</a>, <a href="https://apps.apple.com/app/eter-music-player/id1523039622" target="_blank">Eter</a>, <a href="https://apps.apple.com/app/cuterdio/id1514332502" target="_blank">Cuterdio</a></div>
+            <div class="apps-row">💻 <strong>Windows / PC:</strong> <a href="https://www.foobar2000.org/" target="_blank">Foobar2000</a>, <a href="https://github.com/zaps166/QMPlay2" target="_blank">QMPlay2</a></div>
+            <div class="apps-row">🐧 <strong>Linux:</strong> <a href="https://flathub.org/apps/de.haeckerfelix.Shortwave" target="_blank">Shortwave</a>, QMPlay2</div>
+            <div class="apps-row">📺 <strong>TV / Auto / Domácnost:</strong> Kodi, VLC Media Player, Home Assistant</div>
+        </div>
+    </div>
+
+    <nav>
+        <button onclick="F_loadCZ()">🇨🇿 Česká Rádia</button>
+        <button onclick="F_indexWorld()">🌍 Indexovat Svět (TOP 20000)</button>
+        <!-- NOVÉ TLAČÍTKO PRO TELEVIZI -->
+        <button class="tv-btn" onclick="F_toggleTV()">📺 Televize z celého světa</button>
+    </nav>
+
+    <!-- TV OBLAST (Zobrazí se po kliknutí na tlačítko výše) -->
+    <div id="tvArea">
+        <button class="close-tv" onclick="F_toggleTV()">❌ Zavřít Televizi</button>
+        <!-- Iframe načte tvůj Github TV projekt -->
+        <iframe id="tvFrame" src=""></iframe>
+    </div>
+
+    <div id="modeButtons">
+        <button class="mode-btn active" id="modeGenreBtn" onclick="F_setMode('genre')">Žánry</button>
+        <button class="mode-btn" id="modeFavBtn" onclick="F_setMode('fav')">Oblíbené ⭐</button>
+        <button class="mode-btn" id="modeSearchBtn" onclick="F_setMode('search')">Vyhledávání 🔍</button>
+    </div>
+
+    <div id="searchBar" style="display:none;">
+        <input id="searchInput" type="text" placeholder="Hledat podle názvu / žánru / země..." />
+        <button onclick="F_doSearch()">OK</button>
+    </div>
+
+    <div id="playerArea">
+        <div id="playerLabel" style="margin-bottom:5px; font-size:12px;">Hraje: Nic</div>
+        <audio id="audioPlayer" controls autoplay style="width:100%; height:30px;"></audio>
+    </div>
+
+    <div id="genresList"></div>
+    <ul id="radioList"></ul>
+
+    <script>
+        const ENDPOINTS = [
+            "https://de1.api.radio-browser.info/json",
+            "https://fr1.api.radio-browser.info/json",
+            "https://nl1.api.radio-browser.info/json",
+            "https://uk1.api.radio-browser.info/json"
+        ];
+
+        const CACHE = { byGenre:{}, stations:[], favorites:[], currentList:[] };
+
+        const C_LIST = document.getElementById('radioList');
+        const C_AUDIO = document.getElementById('audioPlayer');
+        const C_GENRES = document.getElementById('genresList');
+        const C_MODE_BAR = document.getElementById('modeButtons');
+        const C_SEARCH_BAR = document.getElementById('searchBar');
+        const C_SEARCH_INPUT = document.getElementById('searchInput');
+        const C_TV_AREA = document.getElementById('tvArea');
+        const C_TV_FRAME = document.getElementById('tvFrame');
+
+        let CURRENT_MODE = 'genre';
+
+        loadFavorites();
+
+        // --- NOVÁ FUNKCE PRO TELEVIZI ---
+        function F_toggleTV() {
+            if (C_TV_AREA.style.display === 'block') {
+                // Zavření TV
+                C_TV_AREA.style.display = 'none';
+                C_TV_FRAME.src = ""; // Vymaže zdroj pro zastavení přehrávání
+            } else {
+                // Zapnutí TV
+                C_TV_AREA.style.display = 'block';
+                C_TV_FRAME.src = "https://popik666666.github.io/Televize/";
+                
+                // Vypnutí rádia, pokud hraje
+                C_AUDIO.pause();
+                document.getElementById('playerArea').style.display = 'none';
+            }
+        }
+
+        function getStationId(s) {
+            return s.stationuuid || s.url_resolved || s.url;
+        }
+
+        function loadFavorites() {
+            try {
+                CACHE.favorites = JSON.parse(localStorage.getItem('rk_favorites')) || [];
+            } catch(e) { CACHE.favorites = []; }
+        }
+
+        function saveFavorites() {
+            localStorage.setItem('rk_favorites', JSON.stringify(CACHE.favorites));
+        }
+
+        function isFavorite(station) {
+            const id = getStationId(station);
+            return CACHE.favorites.some(f => getStationId(f) === id);
+        }
+
+        function toggleFavorite(station) {
+            const id = getStationId(station);
+            if (isFavorite(station)) {
+                CACHE.favorites = CACHE.favorites.filter(f => getStationId(f) !== id);
+            } else {
+                CACHE.favorites.push(station);
+            }
+            saveFavorites();
+            if (CURRENT_MODE === 'fav') F_renderFavorites();
+            else F_render(CACHE.currentList);
+        }
+
+        function F_toggleFav(id) {
+            let s = CACHE.stations.find(x => getStationId(x) === id)
+                 || CACHE.currentList.find(x => getStationId(x) === id)
+                 || CACHE.favorites.find(x => getStationId(x) === id);
+            if (!s) return;
+            toggleFavorite(s);
+        }
+
+        function F_removeFav(id) {
+            CACHE.favorites = CACHE.favorites.filter(f => getStationId(f) !== id);
+            saveFavorites();
+            if (CURRENT_MODE === 'fav') F_renderFavorites();
+            else F_render(CACHE.currentList);
+        }
+
+        function normalizeTag(tag) {
+            return tag.toLowerCase()
+                .replace(/[\/\.\-\_]/g,"")
+                .replace(/[0-9]/g,"")
+                .replace(/\b(fm|radio|live|stream|online|hd)\b/g,"")
+                .replace(/[^\w\s]/g,"")
+                .replace(/\s+/g,"")
+                .trim();
+        }
+
+        function unifyGenre(tag) {
+            const MAP = {
+                rock:["rock","altrock","alternativerock","indierock","hardrock","softrock","classicrock"],
+                pop:["pop","dancepop","poprock"],
+                metal:["metal","heavymetal","thrashmetal","blackmetal","deathmetal"],
+                electronic:["electronic","edm","techno","house","trance","dnb","dubstep"],
+                jazz:["jazz","smoothjazz","vintagejazz"],
+                classical:["classical","orchestra","symphony"],
+                hiphoprap:["hiphop","rap","trap"],
+                news:["news","talk","speech"],
+                folk:["folk","country"],
+                ambient:["ambient","chill","relax","lofi"]
+            };
+            for (const main in MAP) {
+                if (MAP[main].includes(tag)) return main;
+            }
+            return tag;
+        }
+
+        function processGenres(stations) {
+            const genres = {};
+            for (const s of stations) {
+                if (!s.tags) continue;
+                const rawTags = s.tags.split(",");
+                for (let t of rawTags) {
+                    let g = normalizeTag(t);
+                    if (!g) continue;
+                    g = unifyGenre(g);
+                    if (!genres[g]) genres[g] = [];
+                    genres[g].push(s);
+                }
+            }
+            return genres;
+        }
+
+        function F_setMode(mode) {
+            CURRENT_MODE = mode;
+            document.getElementById('modeGenreBtn').classList.toggle('active', mode==='genre');
+            document.getElementById('modeFavBtn').classList.toggle('active', mode==='fav');
+            document.getElementById('modeSearchBtn').classList.toggle('active', mode==='search');
+
+            C_SEARCH_BAR.style.display = mode==='search' ? 'flex' : 'none';
+            C_GENRES.style.display = mode==='genre' ? 'flex' : 'none';
+
+            if (mode === 'fav') F_renderFavorites();
+            if (mode === 'genre') C_LIST.innerHTML = "<li>Vyberte žánr (nebo nejprve indexujte svět / načtěte CZ rádia).</li>";
+            if (mode === 'search') C_LIST.innerHTML = "<li>Zadejte hledaný výraz.</li>";
+        }
+
+        async function F_doSearch() {
+            const q = C_SEARCH_INPUT.value.trim().toLowerCase();
+            if (!q) { C_LIST.innerHTML = "<li>Zadejte hledaný výraz.</li>"; return; }
+
+            let source = CACHE.currentList.length ? CACHE.currentList : CACHE.stations;
+            
+            if (!source.length) {
+                C_LIST.innerHTML = "<li>Hledám v online databázi...</li>";
+                try {
+                    for (const api of ENDPOINTS) {
+                        const res = await fetch(`${api}/stations/search?name=${encodeURIComponent(q)}&limit=50`);
+                        if (res.ok) {
+                            source = await res.json();
+                            break;
+                        }
+                    }
+                } catch(e) {}
+            }
+
+            const res = source.filter(s => {
+                return (s.name||"").toLowerCase().includes(q)
+                    || (s.country||"").toLowerCase().includes(q)
+                    || (s.tags||"").toLowerCase().includes(q);
+            }).slice(0,100);
+
+            CACHE.currentList = res;
+            if (!res.length) {
+                C_LIST.innerHTML = "<li>Žádné stanice nenalezeny.</li>";
+                return;
+            }
+            F_render(res);
+        }
+
+        async function F_loadCZ() {
+            C_LIST.innerHTML = "<li>Načítám...</li>";
+            C_GENRES.style.display = 'none';
+
+            try {
+                const res = await fetch(`${ENDPOINTS[0]}/stations/bycountrycodeexact/CZ`);
+                const data = await res.json();
+                const filtered = data.filter(s => !s.name.toLowerCase().includes("abdul")).slice(0,50);
+                CACHE.currentList = filtered;
+                F_render(filtered);
+            } catch(e) {
+                C_LIST.innerHTML = "<li>Chyba načítání</li>";
+            }
+        }
+
+        async function F_indexWorld() {
+            C_LIST.innerHTML = "<li>⏳ Indexuji světové stanice (20 000)...</li>";
+            C_GENRES.style.display = 'flex';
+
+            let data = null;
+
+            try {
+                const cached = localStorage.getItem('rk_world_20000');
+                if (cached) {
+                    try {
+                        data = JSON.parse(cached);
+                    } catch (parseError) {
+                        localStorage.removeItem('rk_world_20000');
+                    }
+                } 
+                
+                if (!data) {
+                    for (const api of ENDPOINTS) {
+                        try {
+                            const res = await fetch(`${api}/stations/topclick/20000`);
+                            if (res.ok) {
+                                data = await res.json();
+                                break;
+                            }
+                        } catch (e) {}
+                    }
+
+                    if (!data) {
+                        C_LIST.innerHTML = "<li>❌ Chyba indexace — žádný server neodpovídá.</li>";
+                        return;
+                    }
+
+                    try {
+                        localStorage.setItem('rk_world_20000', JSON.stringify(data));
+                    } catch(err) {
+                        localStorage.removeItem('rk_world_20000');
+                    }
+                }
+
+                CACHE.stations = data;
+                CACHE.byGenre = processGenres(data);
+
+                C_GENRES.innerHTML = Object.keys(CACHE.byGenre)
+                    .sort()
+                    .map(g => `<button onclick="F_filter('${g}')">${g}</button>`)
+                    .join('');
+
+                C_LIST.innerHTML = "<li>✅ Hotovo. Vyberte žánr.</li>";
+
+                loadFavorites();
+
+            } catch(e) {
+                C_LIST.innerHTML = "<li>❌ Chyba indexace — zkus to znovu.</li>";
+            }
+        }
+
+        function F_filter(genre) {
+            const list = CACHE.byGenre[genre].slice(0,50);
+            CACHE.currentList = list;
+            F_render(list);
+        }
+
+        function F_render(data) {
+            C_LIST.innerHTML = data.map(s => {
+                const url = s.url_resolved || s.url;
+                const id = getStationId(s);
+                const fav = isFavorite(s);
+                return `
+                <li class="station-item">
+                    <span class="station-name">${s.name}</span>
+                    <div class="station-actions">
+                        <button class="fav-btn ${fav?'active':''}" onclick="F_toggleFav('${id}')">⭐</button>
+                        <button onclick="F_play('${url}','${s.name.replace(/'/g,"\\'")}')">▶</button>
+                    </div>
+                </li>`;
+            }).join('');
+        }
+
+        function F_renderFavorites() {
+            if (!CACHE.favorites.length) {
+                C_LIST.innerHTML = "<li>Nemáte žádné oblíbené stanice.</li>";
+                return;
+            }
+
+            const data = CACHE.favorites.slice(0,100);
+            CACHE.currentList = data;
+
+            C_LIST.innerHTML = data.map(s => {
+                const url = s.url_resolved || s.url;
+                const id = getStationId(s);
+                return `
+                <li class="station-item">
+                    <span class="station-name">${s.name}</span>
+                    <div class="station-actions">
+                        <button class="del-btn" onclick="F_removeFav('${id}')" title="Smazat z oblíbených">❌</button>
+                        <button onclick="F_play('${url}','${s.name.replace(/'/g,"\\'")}')">▶</button>
+                    </div>
+                </li>`;
+            }).join('');
+        }
+
+        function F_play(url, name) {
+            // Pokud zapnu rádio, vypnu televizi (aby se nemíchal zvuk)
+            if (C_TV_AREA.style.display === 'block') {
+                C_TV_AREA.style.display = 'none';
+                C_TV_FRAME.src = "";
+            }
+
+            document.getElementById('playerArea').style.display = 'block';
+            C_AUDIO.src = url;
+            document.getElementById('playerLabel').textContent = "Hraje: " + name;
+            C_AUDIO.play().catch(()=>{});
+        }
+    </script>
 </body>
-
 </html>
