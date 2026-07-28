@@ -15,7 +15,10 @@
             text-align:center; margin-bottom:10px; background:#000; }
         .shinto-box h2 { margin:0 0 5px 0; font-size:18px; color:var(--accent); }
 
-        .apps-box { border:1px solid #444; background:#111; padding:10px; border-radius:5px; margin-bottom:10px; font-size:12px; }
+        .apps-toggle-btn { background:#222; border:1px solid #444; color:#fff; width:100%; margin-bottom:10px; padding:10px; font-size:13px; text-align:center; display:block; cursor:pointer; }
+        .apps-toggle-btn:hover { background:#333; }
+
+        .apps-box { border:1px solid #444; background:#111; padding:10px; border-radius:5px; margin-bottom:10px; font-size:12px; display:none; }
         .apps-box h3 { margin:0 0 8px 0; font-size:14px; color:var(--accent); text-align:center; }
         .apps-grid { display:grid; grid-template-columns:1fr; gap:6px; }
         .apps-row { background:#1a1a1a; padding:6px 8px; border-radius:3px; border-left:2px solid var(--accent); }
@@ -26,7 +29,9 @@
             border-radius:3px; font-weight:bold; }
         button:hover { background:var(--accent); }
 
-        /* Tlačítko pro Televizi */
+        .kofi-btn { background:#29abe2; color:white; padding:6px 12px; font-size:12px; text-decoration:none; border-radius:3px; font-weight:bold; display:inline-block; }
+        .kofi-btn:hover { background:#1a8ab8; }
+
         .tv-btn { background: #0055ff; margin-top: 5px; }
         .tv-btn:hover { background: #3377ff; }
 
@@ -34,16 +39,16 @@
             margin-bottom:10px; display:none; border-left:3px solid var(--accent); }
 
         #genresList { display:flex; flex-wrap:wrap; gap:3px; max-height:200px; overflow-y:auto;
-            padding:5px; background:#000; border-radius:3px; margin-bottom:10px; }
+            padding:5px; background:#000; border-radius:3px; margin-bottom:10px; contain: content; }
 
-        #radioList { list-style:none; padding:0; display:grid; grid-template-columns:1fr; gap:5px; }
+        #radioList { list-style:none; padding:0; display:grid; grid-template-columns:1fr; gap:5px; contain: content; }
 
         .station-item { background:var(--card-bg); padding:8px; border-radius:3px;
             font-size:14px; display:flex; align-items:center; justify-content:space-between; }
 
-        .station-name { flex:1; margin-right:8px; }
+        .station-name { flex:1; margin-right:8px; word-break: break-word; }
 
-        .station-actions { display:flex; gap:4px; }
+        .station-actions { display:flex; gap:4px; flex-shrink: 0; }
 
         .fav-btn { background:#555; }
         .fav-btn.active { background:#ffcc00; color:#000; }
@@ -57,10 +62,11 @@
         .mode-btn { flex:1; }
         .mode-btn.active { background:var(--accent); }
 
-        /* Kontejner pro TV (skrytý ve výchozím stavu) */
-        #tvArea { display: none; margin-bottom: 10px; background: #000; border: 1px solid #444; border-radius: 5px; padding: 10px; }
+        /* Kontejner pro TV */
+        #tvArea { display: none; margin-top: 15px; margin-bottom: 10px; background: #000; border: 1px solid #444; border-radius: 5px; padding: 10px; }
         #tvArea iframe { width: 100%; height: 500px; border: none; background: #000; }
-        .close-tv { background: #ff3333; color: white; padding: 5px 10px; margin-bottom: 10px; cursor: pointer; border-radius: 3px; font-weight: bold; border: none; display: block; width: 100%; text-align: center; }
+
+        .close-tv { background: #ff3333; color: white; padding: 6px; margin-bottom: 5px; cursor: pointer; border-radius: 3px; font-weight: bold; border: none; display: block; width: 100%; text-align: center; }
     </style>
 </head>
 
@@ -74,18 +80,22 @@
             <script src="//myradiostream.com/embed/Popik666"></script>
         </div>
         
-        <!-- VYČIŠTĚNÉ ODKAZY -->
-        <div style="margin-top:8px; display:flex; justify-content:center; gap:8px;">
+        <div style="margin-top:8px; display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
             <a href="http://s49.myradiostream.com:8142/;" target="_blank" style="background:#222; color:#ff3333; padding:6px 12px; font-size:12px; text-decoration:none; border:1px solid #ff3333; border-radius:3px; font-weight:bold;">▶️ Přímý Stream (VLC / Hráče)</a>
             <a href="https://popik666.on-air.fm" target="_blank" style="background:#222; color:#ff3333; padding:6px 12px; font-size:12px; text-decoration:none; border:1px solid #ff3333; border-radius:3px; font-weight:bold;">🔗 Právě hraje</a>
+            <a href="https://ko-fi.com/W5K423BSX0" target="_blank" class="kofi-btn">☕ Podpořit na Ko-fi</a>
         </div>
+        <p style="font-size:12px; color:#aaa; margin:8px 0 0 0;">Rádio je přístupné také na <strong>radio.net</strong></p>
     </div>
 
-    <!-- KOMPLETNÍ SEZNAM APLIKACÍ -->
-    <div class="apps-box">
+    <!-- TLAČÍTKO PRO SCHOVÁNÍ / ZOBRAZENÍ APLIKACÍ -->
+    <button class="apps-toggle-btn" onclick="F_toggleApps()">📱 Kde nás najdete (Aplikace & radio.net) 🔽</button>
+
+    <div class="apps-box" id="appsBox">
         <h3>📱 KDE NÁS NAJDETE</h3>
         <p style="text-align:center; margin:0 0 8px 0;">V aplikacích vyhledejte název: <strong style="color:#fff; background:#222; padding:2px 6px; border-radius:3px;">Shinto</strong></p>
         <div class="apps-grid">
+            <div class="apps-row">🌐 <strong>Web:</strong> <a href="https://www.radio.net" target="_blank">radio.net</a> (vyhledejte Shinto)</div>
             <div class="apps-row">🤖 <strong>Android:</strong> <a href="https://play.google.com/store/apps/details?id=net.dhleong.m3u.player" target="_blank">RadioDroid</a>, <a href="https://f-droid.org/packages/org.y20k.transistor/" target="_blank">Transistor</a>, RadioMobi</div>
             <div class="apps-row">🍏 <strong>iOS / Mac:</strong> <a href="https://apps.apple.com/app/froggy-radio/id1527843471" target="_blank">Froggy Radio</a>, <a href="https://apps.apple.com/app/eter-music-player/id1523039622" target="_blank">Eter</a>, <a href="https://apps.apple.com/app/cuterdio/id1514332502" target="_blank">Cuterdio</a></div>
             <div class="apps-row">💻 <strong>Windows / PC:</strong> <a href="https://www.foobar2000.org/" target="_blank">Foobar2000</a>, <a href="https://github.com/zaps166/QMPlay2" target="_blank">QMPlay2</a></div>
@@ -95,18 +105,10 @@
     </div>
 
     <nav>
-        <button onclick="F_loadCZ()">🇨🇿 Česká Rádia</button>
-        <button onclick="F_indexWorld()">🌍 Indexovat Svět (TOP 20000)</button>
-        <!-- NOVÉ TLAČÍTKO PRO TELEVIZI -->
+        <button id="btnCZ" onclick="F_loadCZ()">🇨🇿 Česká Rádia</button>
+        <button id="btnWorld" onclick="F_indexWorld()">🌍 Indexovat Svět (TOP 20000)</button>
         <button class="tv-btn" onclick="F_toggleTV()">📺 Televize z celého světa</button>
     </nav>
-
-    <!-- TV OBLAST (Zobrazí se po kliknutí na tlačítko výše) -->
-    <div id="tvArea">
-        <button class="close-tv" onclick="F_toggleTV()">❌ Zavřít Televizi</button>
-        <!-- Iframe načte tvůj Github TV projekt -->
-        <iframe id="tvFrame" src=""></iframe>
-    </div>
 
     <div id="modeButtons">
         <button class="mode-btn active" id="modeGenreBtn" onclick="F_setMode('genre')">Žánry</button>
@@ -115,7 +117,7 @@
     </div>
 
     <div id="searchBar" style="display:none;">
-        <input id="searchInput" type="text" placeholder="Hledat podle názvu / žánru / země..." />
+        <input id="searchInput" type="text" placeholder="Hledat podle názvu / žánru / země..." onkeyup="if(event.key==='Enter') F_doSearch()"/>
         <button onclick="F_doSearch()">OK</button>
     </div>
 
@@ -127,6 +129,12 @@
     <div id="genresList"></div>
     <ul id="radioList"></ul>
 
+    <!-- TV OBLAST -->
+    <div id="tvArea">
+        <button class="close-tv" onclick="F_toggleTV()">❌ Zavřít Televizi</button>
+        <iframe id="tvFrame" src="" allow="autoplay; fullscreen; picture-in-picture; display-capture" allowfullscreen="true"></iframe>
+    </div>
+
     <script>
         const ENDPOINTS = [
             "https://de1.api.radio-browser.info/json",
@@ -135,35 +143,54 @@
             "https://uk1.api.radio-browser.info/json"
         ];
 
+        const MAP_GENRES = {
+            rock: ["rock","altrock","alternativerock","indierock","hardrock","softrock","classicrock"],
+            pop: ["pop","dancepop","poprock"],
+            metal: ["metal","heavymetal","thrashmetal","blackmetal","deathmetal"],
+            electronic: ["electronic","edm","techno","house","trance","dnb","dubstep"],
+            jazz: ["jazz","smoothjazz","vintagejazz"],
+            classical: ["classical","orchestra","symphony"],
+            hiphoprap: ["hiphop","rap","trap"],
+            news: ["news","talk","speech"],
+            folk: ["folk","country"],
+            ambient: ["ambient","chill","relax","lofi"]
+        };
+
         const CACHE = { byGenre:{}, stations:[], favorites:[], currentList:[] };
 
         const C_LIST = document.getElementById('radioList');
         const C_AUDIO = document.getElementById('audioPlayer');
         const C_GENRES = document.getElementById('genresList');
-        const C_MODE_BAR = document.getElementById('modeButtons');
         const C_SEARCH_BAR = document.getElementById('searchBar');
         const C_SEARCH_INPUT = document.getElementById('searchInput');
         const C_TV_AREA = document.getElementById('tvArea');
         const C_TV_FRAME = document.getElementById('tvFrame');
+        const C_PLAYER_AREA = document.getElementById('playerArea');
+        const C_PLAYER_LABEL = document.getElementById('playerLabel');
 
         let CURRENT_MODE = 'genre';
+        let IS_CZ_OPEN = false; 
+        let IS_WORLD_OPEN = false;
 
         loadFavorites();
 
-        // --- NOVÁ FUNKCE PRO TELEVIZI ---
+        function F_toggleApps() {
+            const box = document.getElementById('appsBox');
+            box.style.display = (box.style.display === 'none' || box.style.display === '') ? 'block' : 'none';
+        }
+
         function F_toggleTV() {
+            IS_CZ_OPEN = false;
+            IS_WORLD_OPEN = false;
             if (C_TV_AREA.style.display === 'block') {
-                // Zavření TV
                 C_TV_AREA.style.display = 'none';
-                C_TV_FRAME.src = ""; // Vymaže zdroj pro zastavení přehrávání
+                C_TV_FRAME.src = "";
             } else {
-                // Zapnutí TV
                 C_TV_AREA.style.display = 'block';
                 C_TV_FRAME.src = "https://popik666666.github.io/Televize/";
                 
-                // Vypnutí rádia, pokud hraje
                 C_AUDIO.pause();
-                document.getElementById('playerArea').style.display = 'none';
+                C_PLAYER_AREA.style.display = 'none';
             }
         }
 
@@ -178,7 +205,9 @@
         }
 
         function saveFavorites() {
-            localStorage.setItem('rk_favorites', JSON.stringify(CACHE.favorites));
+            try {
+                localStorage.setItem('rk_favorites', JSON.stringify(CACHE.favorites));
+            } catch(e) {}
         }
 
         function isFavorite(station) {
@@ -215,40 +244,26 @@
 
         function normalizeTag(tag) {
             return tag.toLowerCase()
-                .replace(/[\/\.\-\_]/g,"")
-                .replace(/[0-9]/g,"")
-                .replace(/\b(fm|radio|live|stream|online|hd)\b/g,"")
-                .replace(/[^\w\s]/g,"")
-                .replace(/\s+/g,"")
+                .replace(/[\/\.\-\_0-9]|[^\w\s]|\b(fm|radio|live|stream|online|hd)\b/g, "")
+                .replace(/\s+/g, "")
                 .trim();
         }
 
         function unifyGenre(tag) {
-            const MAP = {
-                rock:["rock","altrock","alternativerock","indierock","hardrock","softrock","classicrock"],
-                pop:["pop","dancepop","poprock"],
-                metal:["metal","heavymetal","thrashmetal","blackmetal","deathmetal"],
-                electronic:["electronic","edm","techno","house","trance","dnb","dubstep"],
-                jazz:["jazz","smoothjazz","vintagejazz"],
-                classical:["classical","orchestra","symphony"],
-                hiphoprap:["hiphop","rap","trap"],
-                news:["news","talk","speech"],
-                folk:["folk","country"],
-                ambient:["ambient","chill","relax","lofi"]
-            };
-            for (const main in MAP) {
-                if (MAP[main].includes(tag)) return main;
+            for (const main in MAP_GENRES) {
+                if (MAP_GENRES[main].includes(tag)) return main;
             }
             return tag;
         }
 
         function processGenres(stations) {
             const genres = {};
-            for (const s of stations) {
+            for (let i = 0; i < stations.length; i++) {
+                const s = stations[i];
                 if (!s.tags) continue;
                 const rawTags = s.tags.split(",");
-                for (let t of rawTags) {
-                    let g = normalizeTag(t);
+                for (let j = 0; j < rawTags.length; j++) {
+                    let g = normalizeTag(rawTags[j]);
                     if (!g) continue;
                     g = unifyGenre(g);
                     if (!genres[g]) genres[g] = [];
@@ -259,6 +274,8 @@
         }
 
         function F_setMode(mode) {
+            IS_CZ_OPEN = false;
+            IS_WORLD_OPEN = false;
             CURRENT_MODE = mode;
             document.getElementById('modeGenreBtn').classList.toggle('active', mode==='genre');
             document.getElementById('modeFavBtn').classList.toggle('active', mode==='fav');
@@ -306,6 +323,13 @@
         }
 
         async function F_loadCZ() {
+            IS_WORLD_OPEN = false;
+            if (IS_CZ_OPEN) {
+                C_LIST.innerHTML = "";
+                IS_CZ_OPEN = false;
+                return;
+            }
+
             C_LIST.innerHTML = "<li>Načítám...</li>";
             C_GENRES.style.display = 'none';
 
@@ -315,12 +339,24 @@
                 const filtered = data.filter(s => !s.name.toLowerCase().includes("abdul")).slice(0,50);
                 CACHE.currentList = filtered;
                 F_render(filtered);
+                IS_CZ_OPEN = true;
             } catch(e) {
                 C_LIST.innerHTML = "<li>Chyba načítání</li>";
+                IS_CZ_OPEN = false;
             }
         }
 
         async function F_indexWorld() {
+            IS_CZ_OPEN = false;
+            
+            if (IS_WORLD_OPEN) {
+                C_GENRES.style.display = 'none';
+                C_GENRES.innerHTML = "";
+                C_LIST.innerHTML = "";
+                IS_WORLD_OPEN = false;
+                return;
+            }
+
             C_LIST.innerHTML = "<li>⏳ Indexuji světové stanice (20 000)...</li>";
             C_GENRES.style.display = 'flex';
 
@@ -329,11 +365,8 @@
             try {
                 const cached = localStorage.getItem('rk_world_20000');
                 if (cached) {
-                    try {
-                        data = JSON.parse(cached);
-                    } catch (parseError) {
-                        localStorage.removeItem('rk_world_20000');
-                    }
+                    try { data = JSON.parse(cached); } 
+                    catch (parseError) { localStorage.removeItem('rk_world_20000'); }
                 } 
                 
                 if (!data) {
@@ -354,9 +387,7 @@
 
                     try {
                         localStorage.setItem('rk_world_20000', JSON.stringify(data));
-                    } catch(err) {
-                        localStorage.removeItem('rk_world_20000');
-                    }
+                    } catch(err) {}
                 }
 
                 CACHE.stations = data;
@@ -368,11 +399,12 @@
                     .join('');
 
                 C_LIST.innerHTML = "<li>✅ Hotovo. Vyberte žánr.</li>";
-
                 loadFavorites();
+                IS_WORLD_OPEN = true;
 
             } catch(e) {
                 C_LIST.innerHTML = "<li>❌ Chyba indexace — zkus to znovu.</li>";
+                IS_WORLD_OPEN = false;
             }
         }
 
@@ -382,17 +414,22 @@
             F_render(list);
         }
 
+        function escapeText(str) {
+            return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
         function F_render(data) {
             C_LIST.innerHTML = data.map(s => {
                 const url = s.url_resolved || s.url;
                 const id = getStationId(s);
                 const fav = isFavorite(s);
+                const safeName = escapeText(s.name);
                 return `
                 <li class="station-item">
                     <span class="station-name">${s.name}</span>
                     <div class="station-actions">
                         <button class="fav-btn ${fav?'active':''}" onclick="F_toggleFav('${id}')">⭐</button>
-                        <button onclick="F_play('${url}','${s.name.replace(/'/g,"\\'")}')">▶</button>
+                        <button onclick="F_play('${url}','${safeName}')">▶</button>
                     </div>
                 </li>`;
             }).join('');
@@ -410,27 +447,27 @@
             C_LIST.innerHTML = data.map(s => {
                 const url = s.url_resolved || s.url;
                 const id = getStationId(s);
+                const safeName = escapeText(s.name);
                 return `
                 <li class="station-item">
                     <span class="station-name">${s.name}</span>
                     <div class="station-actions">
                         <button class="del-btn" onclick="F_removeFav('${id}')" title="Smazat z oblíbených">❌</button>
-                        <button onclick="F_play('${url}','${s.name.replace(/'/g,"\\'")}')">▶</button>
+                        <button onclick="F_play('${url}','${safeName}')">▶</button>
                     </div>
                 </li>`;
             }).join('');
         }
 
         function F_play(url, name) {
-            // Pokud zapnu rádio, vypnu televizi (aby se nemíchal zvuk)
             if (C_TV_AREA.style.display === 'block') {
                 C_TV_AREA.style.display = 'none';
                 C_TV_FRAME.src = "";
             }
 
-            document.getElementById('playerArea').style.display = 'block';
+            C_PLAYER_AREA.style.display = 'block';
             C_AUDIO.src = url;
-            document.getElementById('playerLabel').textContent = "Hraje: " + name;
+            C_PLAYER_LABEL.textContent = "Hraje: " + name;
             C_AUDIO.play().catch(()=>{});
         }
     </script>
