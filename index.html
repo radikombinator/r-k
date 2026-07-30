@@ -32,13 +32,19 @@
         .kofi-btn { background:#29abe2; color:white; padding:6px 12px; font-size:12px; text-decoration:none; border-radius:3px; font-weight:bold; display:inline-block; }
         .kofi-btn:hover { background:#1a8ab8; }
 
-        .tv-btn { background: #0055ff; margin-top: 5px; }
+        .discord-btn { background:#5865F2; color:white; padding:6px 12px; font-size:12px; text-decoration:none; border-radius:3px; font-weight:bold; display:inline-block; }
+        .discord-btn:hover { background:#4752C4; }
+
+        .tv-btn { background: #0055ff; }
         .tv-btn:hover { background: #3377ff; }
+
+        .game-btn { background: #8e44ad; }
+        .game-btn:hover { background: #9b59b6; }
 
         #playerArea { background:var(--card-bg); padding:10px; border-radius:5px;
             margin-bottom:10px; display:none; border-left:3px solid var(--accent); }
 
-        #genresList { display:flex; flex-wrap:wrap; gap:3px; max-height:200px; overflow-y:auto;
+        #genresList { display:none; flex-wrap:wrap; gap:3px; max-height:200px; overflow-y:auto;
             padding:5px; background:#000; border-radius:3px; margin-bottom:10px; contain: content; }
 
         #radioList { list-style:none; padding:0; display:grid; grid-template-columns:1fr; gap:5px; contain: content; }
@@ -62,11 +68,32 @@
         .mode-btn { flex:1; }
         .mode-btn.active { background:var(--accent); }
 
-        /* Kontejner pro TV */
+        /* Kontejner pro TV s plnou podporou Fullscreen */
         #tvArea { display: none; margin-top: 15px; margin-bottom: 10px; background: #000; border: 1px solid #444; border-radius: 5px; padding: 10px; }
         #tvArea iframe { width: 100%; height: 500px; border: none; background: #000; }
 
-        .close-tv { background: #ff3333; color: white; padding: 6px; margin-bottom: 5px; cursor: pointer; border-radius: 3px; font-weight: bold; border: none; display: block; width: 100%; text-align: center; }
+        #tvArea:fullscreen, #tvArea:-webkit-full-screen, #tvArea:-moz-full-screen {
+            width: 100vw !important; height: 100vh !important; padding: 10px !important; box-sizing: border-box !important; background: #000 !important;
+        }
+        #tvArea:fullscreen iframe, #tvArea:-webkit-full-screen iframe, #tvArea:-moz-full-screen iframe {
+            height: calc(100vh - 90px) !important;
+        }
+
+        /* Kontejner pro Hru s plnou podporou Fullscreen */
+        #gameArea { display: none; margin-top: 15px; margin-bottom: 10px; background: #000; border: 1px solid #444; border-radius: 5px; padding: 10px; }
+        #gameArea iframe { width: 100%; height: 500px; border: none; background: #000; }
+
+        #gameArea:fullscreen, #gameArea:-webkit-full-screen, #gameArea:-moz-full-screen {
+            width: 100vw !important; height: 100vh !important; padding: 10px !important; box-sizing: border-box !important; background: #000 !important;
+        }
+        #gameArea:fullscreen iframe, #gameArea:-webkit-full-screen iframe, #gameArea:-moz-full-screen iframe {
+            height: calc(100vh - 90px) !important;
+        }
+
+        .close-tv, .close-game { background: #ff3333; color: white; padding: 6px; margin-bottom: 5px; cursor: pointer; border-radius: 3px; font-weight: bold; border: none; display: block; width: 100%; text-align: center; }
+        .fs-tv-btn, .fs-game-btn { background: #28a745; color: white; padding: 6px; margin-bottom: 5px; cursor: pointer; border-radius: 3px; font-weight: bold; border: none; display: block; width: 100%; text-align: center; }
+        .fs-tv-btn:hover, .fs-game-btn:hover { background: #218838; }
+        .direct-tv-btn, .direct-game-btn { background: #222; color: #3377ff; border: 1px solid #0055ff; padding: 6px; text-decoration: none; display: block; text-align: center; font-size: 12px; font-weight: bold; margin-bottom: 10px; border-radius: 3px; }
     </style>
 </head>
 
@@ -81,9 +108,10 @@
         </div>
         
         <div style="margin-top:8px; display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
-            <a href="http://s49.myradiostream.com:8142/;" target="_blank" style="background:#222; color:#ff3333; padding:6px 12px; font-size:12px; text-decoration:none; border:1px solid #ff3333; border-radius:3px; font-weight:bold;">▶️ Přímý Stream (VLC / Hráče)</a>
+            <a href="http://s49.myradiostream.com:8142/;" target="_blank" style="background:#222; color:#ff3333; padding:6px 12px; font-size:12px; text-decoration:none; border:1px solid #ff3333; border-radius:3px; font-weight:bold;">▶️ Přímý Stream</a>
             <a href="https://popik666.on-air.fm" target="_blank" style="background:#222; color:#ff3333; padding:6px 12px; font-size:12px; text-decoration:none; border:1px solid #ff3333; border-radius:3px; font-weight:bold;">🔗 Právě hraje</a>
             <a href="https://ko-fi.com/W5K423BSX0" target="_blank" class="kofi-btn">☕ Podpořit na Ko-fi</a>
+            <a href="https://discord.gg/CjcSgm7s" target="_blank" class="discord-btn">💬 Discord (RC Modeláři)</a>
         </div>
         <p style="font-size:12px; color:#aaa; margin:8px 0 0 0;">Rádio je přístupné také na <strong>radio.net</strong></p>
     </div>
@@ -108,6 +136,7 @@
         <button id="btnCZ" onclick="F_loadCZ()">🇨🇿 Česká Rádia</button>
         <button id="btnWorld" onclick="F_indexWorld()">🌍 Indexovat Svět (TOP 20000)</button>
         <button class="tv-btn" onclick="F_toggleTV()">📺 Televize z celého světa</button>
+        <button class="game-btn" onclick="F_toggleGame()">🎮 Herní Modul (Arkpong)</button>
     </nav>
 
     <div id="modeButtons">
@@ -132,7 +161,17 @@
     <!-- TV OBLAST -->
     <div id="tvArea">
         <button class="close-tv" onclick="F_toggleTV()">❌ Zavřít Televizi</button>
+        <button class="fs-tv-btn" onclick="F_toggleFullscreenTV()">⛶ Celá obrazovka / Ukončit fullscreen</button>
+        <a href="https://popik666666.github.io/Televize/" target="_blank" class="direct-tv-btn">🔗 Otevřít Televizi v novém okně (vhodné pro Obraz v obraze / PiP)</a>
         <iframe id="tvFrame" src="" allow="autoplay; fullscreen; picture-in-picture; display-capture" allowfullscreen="true"></iframe>
+    </div>
+
+    <!-- GAME OBLAST -->
+    <div id="gameArea">
+        <button class="close-game" onclick="F_toggleGame()">❌ Zavřít Hru</button>
+        <button class="fs-game-btn" onclick="F_toggleFullscreenGame()">⛶ Celá obrazovka / Ukončit fullscreen</button>
+        <a href="https://popik666666.github.io/arkapong/" target="_blank" class="direct-game-btn">🔗 Otevřít Hru v novém okně</a>
+        <iframe id="gameFrame" src="" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen="true"></iframe>
     </div>
 
     <script>
@@ -165,6 +204,8 @@
         const C_SEARCH_INPUT = document.getElementById('searchInput');
         const C_TV_AREA = document.getElementById('tvArea');
         const C_TV_FRAME = document.getElementById('tvFrame');
+        const C_GAME_AREA = document.getElementById('gameArea');
+        const C_GAME_FRAME = document.getElementById('gameFrame');
         const C_PLAYER_AREA = document.getElementById('playerArea');
         const C_PLAYER_LABEL = document.getElementById('playerLabel');
 
@@ -182,15 +223,86 @@
         function F_toggleTV() {
             IS_CZ_OPEN = false;
             IS_WORLD_OPEN = false;
+            if (C_GAME_AREA.style.display === 'block') {
+                C_GAME_AREA.style.display = 'none';
+                C_GAME_FRAME.src = "";
+            }
             if (C_TV_AREA.style.display === 'block') {
                 C_TV_AREA.style.display = 'none';
                 C_TV_FRAME.src = "";
             } else {
                 C_TV_AREA.style.display = 'block';
                 C_TV_FRAME.src = "https://popik666666.github.io/Televize/";
-                
-                C_AUDIO.pause();
-                C_PLAYER_AREA.style.display = 'none';
+            }
+        }
+
+        function F_toggleGame() {
+            IS_CZ_OPEN = false;
+            IS_WORLD_OPEN = false;
+            if (C_TV_AREA.style.display === 'block') {
+                C_TV_AREA.style.display = 'none';
+                C_TV_FRAME.src = "";
+            }
+            if (C_GAME_AREA.style.display === 'block') {
+                C_GAME_AREA.style.display = 'none';
+                C_GAME_FRAME.src = "";
+            } else {
+                C_GAME_AREA.style.display = 'block';
+                C_GAME_FRAME.src = "https://popik666666.github.io/arkapong/";
+            }
+        }
+
+        function F_toggleFullscreenTV() {
+            const tvArea = document.getElementById('tvArea');
+            const fsElement = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+
+            if (!fsElement) {
+                if (tvArea.requestFullscreen) {
+                    tvArea.requestFullscreen();
+                } else if (tvArea.webkitRequestFullscreen) {
+                    tvArea.webkitRequestFullscreen();
+                } else if (tvArea.mozRequestFullScreen) {
+                    tvArea.mozRequestFullScreen();
+                } else if (tvArea.msRequestFullscreen) {
+                    tvArea.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        }
+
+        function F_toggleFullscreenGame() {
+            const gameArea = document.getElementById('gameArea');
+            const fsElement = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+
+            if (!fsElement) {
+                if (gameArea.requestFullscreen) {
+                    gameArea.requestFullscreen();
+                } else if (gameArea.webkitRequestFullscreen) {
+                    gameArea.webkitRequestFullscreen();
+                } else if (gameArea.mozRequestFullScreen) {
+                    gameArea.mozRequestFullScreen();
+                } else if (gameArea.msRequestFullscreen) {
+                    gameArea.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
             }
         }
 
@@ -324,6 +436,8 @@
 
         async function F_loadCZ() {
             IS_WORLD_OPEN = false;
+            C_GENRES.style.display = 'none';
+            
             if (IS_CZ_OPEN) {
                 C_LIST.innerHTML = "";
                 IS_CZ_OPEN = false;
@@ -331,7 +445,6 @@
             }
 
             C_LIST.innerHTML = "<li>Načítám...</li>";
-            C_GENRES.style.display = 'none';
 
             try {
                 const res = await fetch(`${ENDPOINTS[0]}/stations/bycountrycodeexact/CZ`);
@@ -349,7 +462,8 @@
         async function F_indexWorld() {
             IS_CZ_OPEN = false;
             
-            if (IS_WORLD_OPEN) {
+            // Pokud jsou světová rádia/žánry otevřené, zavřeme je (stejně jako CZ rádia)
+            if (IS_WORLD_OPEN || (C_GENRES.style.display === 'flex' && C_GENRES.innerHTML !== '')) {
                 C_GENRES.style.display = 'none';
                 C_GENRES.innerHTML = "";
                 C_LIST.innerHTML = "";
@@ -382,6 +496,7 @@
 
                     if (!data) {
                         C_LIST.innerHTML = "<li>❌ Chyba indexace — žádný server neodpovídá.</li>";
+                        C_GENRES.style.display = 'none';
                         return;
                     }
 
@@ -404,6 +519,7 @@
 
             } catch(e) {
                 C_LIST.innerHTML = "<li>❌ Chyba indexace — zkus to znovu.</li>";
+                C_GENRES.style.display = 'none';
                 IS_WORLD_OPEN = false;
             }
         }
@@ -463,6 +579,10 @@
             if (C_TV_AREA.style.display === 'block') {
                 C_TV_AREA.style.display = 'none';
                 C_TV_FRAME.src = "";
+            }
+            if (C_GAME_AREA.style.display === 'block') {
+                C_GAME_AREA.style.display = 'none';
+                C_GAME_FRAME.src = "";
             }
 
             C_PLAYER_AREA.style.display = 'block';
