@@ -7,7 +7,14 @@
 
     <style>
         :root { --bg:#121212; --card-bg:#1e1e1e; --accent:#ff3333; --text:#e0e0e0; }
-        body { font-family:sans-serif; background:var(--bg); color:var(--text); margin:0; padding:10px; }
+        body { 
+            font-family: sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            margin: 0 auto; 
+            padding: 10px; 
+            max-width: 700px; 
+        }
 
         .site-title { text-align:center; font-size:28px; font-weight:bold; margin:10px 0; color:white; }
 
@@ -32,14 +39,11 @@
         .kofi-btn { background:#29abe2; color:white; padding:6px 12px; font-size:12px; text-decoration:none; border-radius:3px; font-weight:bold; display:inline-block; }
         .kofi-btn:hover { background:#1a8ab8; }
 
-        .discord-btn { background:#5865F2; color:white; padding:6px 12px; font-size:12px; text-decoration:none; border-radius:3px; font-weight:bold; display:inline-block; }
-        .discord-btn:hover { background:#4752C4; }
-
-        .tv-btn { background: #0055ff; }
+        .tv-btn { background: #0055ff; margin-top: 2px; }
         .tv-btn:hover { background: #3377ff; }
 
-        .game-btn { background: #8e44ad; }
-        .game-btn:hover { background: #9b59b6; }
+        .game-btn { background: #28a745; margin-top: 2px; }
+        .game-btn:hover { background: #218838; }
 
         #playerArea { background:var(--card-bg); padding:10px; border-radius:5px;
             margin-bottom:10px; display:none; border-left:3px solid var(--accent); }
@@ -73,27 +77,26 @@
         #tvArea iframe { width: 100%; height: 500px; border: none; background: #000; }
 
         #tvArea:fullscreen, #tvArea:-webkit-full-screen, #tvArea:-moz-full-screen {
-            width: 100vw !important; height: 100vh !important; padding: 10px !important; box-sizing: border-box !important; background: #000 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            padding: 10px !important;
+            box-sizing: border-box !important;
+            background: #000 !important;
         }
         #tvArea:fullscreen iframe, #tvArea:-webkit-full-screen iframe, #tvArea:-moz-full-screen iframe {
             height: calc(100vh - 90px) !important;
         }
 
-        /* Kontejner pro Hru s plnou podporou Fullscreen */
-        #gameArea { display: none; margin-top: 15px; margin-bottom: 10px; background: #000; border: 1px solid #444; border-radius: 5px; padding: 10px; }
-        #gameArea iframe { width: 100%; height: 500px; border: none; background: #000; }
+        .close-tv { background: #ff3333; color: white; padding: 6px; margin-bottom: 5px; cursor: pointer; border-radius: 3px; font-weight: bold; border: none; display: block; width: 100%; text-align: center; }
+        .fs-tv-btn { background: #28a745; color: white; padding: 6px; margin-bottom: 5px; cursor: pointer; border-radius: 3px; font-weight: bold; border: none; display: block; width: 100%; text-align: center; }
+        .fs-tv-btn:hover { background: #218838; }
+        .direct-tv-btn { background: #222; color: #3377ff; border: 1px solid #0055ff; padding: 6px; text-decoration: none; display: block; text-align: center; font-size: 12px; font-weight: bold; margin-bottom: 10px; border-radius: 3px; }
 
-        #gameArea:fullscreen, #gameArea:-webkit-full-screen, #gameArea:-moz-full-screen {
-            width: 100vw !important; height: 100vh !important; padding: 10px !important; box-sizing: border-box !important; background: #000 !important;
-        }
-        #gameArea:fullscreen iframe, #gameArea:-webkit-full-screen iframe, #gameArea:-moz-full-screen iframe {
-            height: calc(100vh - 90px) !important;
-        }
-
-        .close-tv, .close-game { background: #ff3333; color: white; padding: 6px; margin-bottom: 5px; cursor: pointer; border-radius: 3px; font-weight: bold; border: none; display: block; width: 100%; text-align: center; }
-        .fs-tv-btn, .fs-game-btn { background: #28a745; color: white; padding: 6px; margin-bottom: 5px; cursor: pointer; border-radius: 3px; font-weight: bold; border: none; display: block; width: 100%; text-align: center; }
-        .fs-tv-btn:hover, .fs-game-btn:hover { background: #218838; }
-        .direct-tv-btn, .direct-game-btn { background: #222; color: #3377ff; border: 1px solid #0055ff; padding: 6px; text-decoration: none; display: block; text-align: center; font-size: 12px; font-weight: bold; margin-bottom: 10px; border-radius: 3px; }
+        /* HERNÍ MODUL STYLY */
+        #gameArea { display: none; margin-top: 15px; margin-bottom: 10px; background: #000; border: 1px solid var(--accent); border-radius: 5px; padding: 10px; text-align: center; }
+        #gameCanvas { background: #111; border: 1px solid #333; margin: 10px auto; display: block; max-width: 100%; }
+        .game-controls { display: grid; grid-template-columns: repeat(3, 50px); gap: 5px; justify-content: center; margin-top: 10px; }
+        .game-controls button { width: 50px; height: 50px; font-size: 18px; padding: 0; }
     </style>
 </head>
 
@@ -103,27 +106,27 @@
 
     <div class="shinto-box">
         <h2>📻 Rádio Shinto</h2>
-        <div style="max-width:300px;margin:0 auto;">
-            <script src="//myradiostream.com/embed/Popik666"></script>
+        <div style="max-width:350px; margin:0 auto; padding:5px;">
+            <audio controls style="width:100%; height:35px;">
+                <source src="http://s49.myradiostream.com:8142/;" type="audio/mpeg">
+                Tvůj prohlížeč nepodporuje audio přehrávač.
+            </audio>
         </div>
         
         <div style="margin-top:8px; display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
-            <a href="http://s49.myradiostream.com:8142/;" target="_blank" style="background:#222; color:#ff3333; padding:6px 12px; font-size:12px; text-decoration:none; border:1px solid #ff3333; border-radius:3px; font-weight:bold;">▶️ Přímý Stream</a>
             <a href="https://popik666.on-air.fm" target="_blank" style="background:#222; color:#ff3333; padding:6px 12px; font-size:12px; text-decoration:none; border:1px solid #ff3333; border-radius:3px; font-weight:bold;">🔗 Právě hraje</a>
             <a href="https://ko-fi.com/W5K423BSX0" target="_blank" class="kofi-btn">☕ Podpořit na Ko-fi</a>
-            <a href="https://discord.gg/CjcSgm7s" target="_blank" class="discord-btn">💬 Discord (RC Modeláři)</a>
         </div>
-        <p style="font-size:12px; color:#aaa; margin:8px 0 0 0;">Rádio je přístupné také na <strong>radio.net</strong></p>
+        <p style="font-size:12px; color:#aaa; margin:8px 0 0 0;">Rádio je přístupné také na <strong>radio.net</strong> a <strong>TuneIn</strong></p>
     </div>
 
-    <!-- TLAČÍTKO PRO SCHOVÁNÍ / ZOBRAZENÍ APLIKACÍ -->
     <button class="apps-toggle-btn" onclick="F_toggleApps()">📱 Kde nás najdete (Aplikace & radio.net) 🔽</button>
 
     <div class="apps-box" id="appsBox">
         <h3>📱 KDE NÁS NAJDETE</h3>
         <p style="text-align:center; margin:0 0 8px 0;">V aplikacích vyhledejte název: <strong style="color:#fff; background:#222; padding:2px 6px; border-radius:3px;">Shinto</strong></p>
         <div class="apps-grid">
-            <div class="apps-row">🌐 <strong>Web:</strong> <a href="https://www.radio.net" target="_blank">radio.net</a> (vyhledejte Shinto)</div>
+            <div class="apps-row">🌐 <strong>Web & Katalog:</strong> <a href="https://www.radio.net" target="_blank">radio.net</a>, <a href="https://tunein.com" target="_blank">TuneIn</a> (vyhledejte Shinto)</div>
             <div class="apps-row">🤖 <strong>Android:</strong> <a href="https://play.google.com/store/apps/details?id=net.dhleong.m3u.player" target="_blank">RadioDroid</a>, <a href="https://f-droid.org/packages/org.y20k.transistor/" target="_blank">Transistor</a>, RadioMobi</div>
             <div class="apps-row">🍏 <strong>iOS / Mac:</strong> <a href="https://apps.apple.com/app/froggy-radio/id1527843471" target="_blank">Froggy Radio</a>, <a href="https://apps.apple.com/app/eter-music-player/id1523039622" target="_blank">Eter</a>, <a href="https://apps.apple.com/app/cuterdio/id1514332502" target="_blank">Cuterdio</a></div>
             <div class="apps-row">💻 <strong>Windows / PC:</strong> <a href="https://www.foobar2000.org/" target="_blank">Foobar2000</a>, <a href="https://github.com/zaps166/QMPlay2" target="_blank">QMPlay2</a></div>
@@ -133,10 +136,10 @@
     </div>
 
     <nav>
-        <button id="btnCZ" onclick="F_loadCZ()">🇨🇿 Česká Rádia</button>
-        <button id="btnWorld" onclick="F_indexWorld()">🌍 Indexovat Svět (TOP 20000)</button>
+        <button id="btnCZ" onclick="F_loadCZ()">🇨🇿 Česká Rádia (150+ stanic)</button>
+        <button id="btnWorld" onclick="F_indexWorld()">🌍 Indexovat Svět (TOP 20000 podle žánrů)</button>
         <button class="tv-btn" onclick="F_toggleTV()">📺 Televize z celého světa</button>
-        <button class="game-btn" onclick="F_toggleGame()">🎮 Herní Modul (Arkpong)</button>
+        <button class="game-btn" onclick="F_toggleGame()">🎮 Herní Modul (Retro Snake)</button>
     </nav>
 
     <div id="modeButtons">
@@ -166,12 +169,20 @@
         <iframe id="tvFrame" src="" allow="autoplay; fullscreen; picture-in-picture; display-capture" allowfullscreen="true"></iframe>
     </div>
 
-    <!-- GAME OBLAST -->
+    <!-- HERNÍ MODUL -->
     <div id="gameArea">
-        <button class="close-game" onclick="F_toggleGame()">❌ Zavřít Hru</button>
-        <button class="fs-game-btn" onclick="F_toggleFullscreenGame()">⛶ Celá obrazovka / Ukončit fullscreen</button>
-        <a href="https://popik666666.github.io/arkapong/" target="_blank" class="direct-game-btn">🔗 Otevřít Hru v novém okně</a>
-        <iframe id="gameFrame" src="" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen="true"></iframe>
+        <button class="close-tv" onclick="F_toggleGame()">❌ Zavřít Hru</button>
+        <h3 style="color:var(--accent); margin:5px 0;">🐍 TERMINAL SNAKE</h3>
+        <div style="font-size:12px; color:#aaa;">Skóre: <span id="gameScore">0</span></div>
+        <canvas id="gameCanvas" width="300" height="300"></canvas>
+        <div class="game-controls">
+            <div></div>
+            <button onclick="changeDir('UP')">⬆️</button>
+            <div></div>
+            <button onclick="changeDir('LEFT')">⬅️</button>
+            <button onclick="changeDir('DOWN')">⬇️</button>
+            <button onclick="changeDir('RIGHT')">➡️</button>
+        </div>
     </div>
 
     <script>
@@ -205,7 +216,6 @@
         const C_TV_AREA = document.getElementById('tvArea');
         const C_TV_FRAME = document.getElementById('tvFrame');
         const C_GAME_AREA = document.getElementById('gameArea');
-        const C_GAME_FRAME = document.getElementById('gameFrame');
         const C_PLAYER_AREA = document.getElementById('playerArea');
         const C_PLAYER_LABEL = document.getElementById('playerLabel');
 
@@ -223,32 +233,15 @@
         function F_toggleTV() {
             IS_CZ_OPEN = false;
             IS_WORLD_OPEN = false;
-            if (C_GAME_AREA.style.display === 'block') {
-                C_GAME_AREA.style.display = 'none';
-                C_GAME_FRAME.src = "";
-            }
+            if (C_GAME_AREA.style.display === 'block') F_toggleGame();
             if (C_TV_AREA.style.display === 'block') {
                 C_TV_AREA.style.display = 'none';
                 C_TV_FRAME.src = "";
             } else {
                 C_TV_AREA.style.display = 'block';
                 C_TV_FRAME.src = "https://popik666666.github.io/Televize/";
-            }
-        }
-
-        function F_toggleGame() {
-            IS_CZ_OPEN = false;
-            IS_WORLD_OPEN = false;
-            if (C_TV_AREA.style.display === 'block') {
-                C_TV_AREA.style.display = 'none';
-                C_TV_FRAME.src = "";
-            }
-            if (C_GAME_AREA.style.display === 'block') {
-                C_GAME_AREA.style.display = 'none';
-                C_GAME_FRAME.src = "";
-            } else {
-                C_GAME_AREA.style.display = 'block';
-                C_GAME_FRAME.src = "https://popik666666.github.io/arkapong/";
+                C_AUDIO.pause();
+                C_PLAYER_AREA.style.display = 'none';
             }
         }
 
@@ -257,53 +250,127 @@
             const fsElement = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
 
             if (!fsElement) {
-                if (tvArea.requestFullscreen) {
-                    tvArea.requestFullscreen();
-                } else if (tvArea.webkitRequestFullscreen) {
-                    tvArea.webkitRequestFullscreen();
-                } else if (tvArea.mozRequestFullScreen) {
-                    tvArea.mozRequestFullScreen();
-                } else if (tvArea.msRequestFullscreen) {
-                    tvArea.msRequestFullscreen();
-                }
+                if (tvArea.requestFullscreen) tvArea.requestFullscreen();
+                else if (tvArea.webkitRequestFullscreen) tvArea.webkitRequestFullscreen();
+                else if (tvArea.mozRequestFullScreen) tvArea.mozRequestFullScreen();
+                else if (tvArea.msRequestFullscreen) tvArea.msRequestFullscreen();
             } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                } else if (document.mozCancelFullScreen) {
-                    document.mozCancelFullScreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
-                }
+                if (document.exitFullscreen) document.exitFullscreen();
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+                else if (document.msExitFullscreen) document.msExitFullscreen();
             }
         }
 
-        function F_toggleFullscreenGame() {
-            const gameArea = document.getElementById('gameArea');
-            const fsElement = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+        /* HERNÍ MODUL LOGIKA (S blokováním posunu stránky) */
+        let gameInterval = null;
+        let snake = [];
+        let food = {};
+        let dir = 'RIGHT';
+        let score = 0;
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const boxSize = 15;
 
-            if (!fsElement) {
-                if (gameArea.requestFullscreen) {
-                    gameArea.requestFullscreen();
-                } else if (gameArea.webkitRequestFullscreen) {
-                    gameArea.webkitRequestFullscreen();
-                } else if (gameArea.mozRequestFullScreen) {
-                    gameArea.mozRequestFullScreen();
-                } else if (gameArea.msRequestFullscreen) {
-                    gameArea.msRequestFullscreen();
-                }
+        function F_toggleGame() {
+            if (C_TV_AREA.style.display === 'block') F_toggleTV();
+            if (C_GAME_AREA.style.display === 'block') {
+                C_GAME_AREA.style.display = 'none';
+                clearInterval(gameInterval);
+                gameInterval = null;
             } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                } else if (document.mozCancelFullScreen) {
-                    document.mozCancelFullScreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
-                }
+                C_GAME_AREA.style.display = 'block';
+                startGame();
             }
+        }
+
+        function startGame() {
+            snake = [{x: 9 * boxSize, y: 10 * boxSize}];
+            food = {
+                x: Math.floor(Math.random() * (canvas.width / boxSize)) * boxSize,
+                y: Math.floor(Math.random() * (canvas.height / boxSize)) * boxSize
+            };
+            dir = 'RIGHT';
+            score = 0;
+            document.getElementById('gameScore').textContent = score;
+            if (gameInterval) clearInterval(gameInterval);
+            gameInterval = setInterval(drawGame, 100);
+        }
+
+        function changeDir(newDir) {
+            if (newDir === 'LEFT' && dir !== 'RIGHT') dir = 'LEFT';
+            if (newDir === 'UP' && dir !== 'DOWN') dir = 'UP';
+            if (newDir === 'RIGHT' && dir !== 'LEFT') dir = 'RIGHT';
+            if (newDir === 'DOWN' && dir !== 'UP') dir = 'DOWN';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (C_GAME_AREA.style.display === 'block') {
+                if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                    e.preventDefault(); // Zablokuje posouvání celé stránky prohlížeče!
+                }
+                if (e.key === 'ArrowLeft') changeDir('LEFT');
+                if (e.key === 'ArrowUp') changeDir('UP');
+                if (e.key === 'ArrowRight') changeDir('RIGHT');
+                if (e.key === 'ArrowDown') changeDir('DOWN');
+            }
+        });
+
+        function drawGame() {
+            ctx.fillStyle = '#111';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < snake.length; i++) {
+                ctx.fillStyle = (i === 0) ? '#ff3333' : '#e0e0e0';
+                ctx.fillRect(snake[i].x, snake[i].y, boxSize, boxSize);
+            }
+
+            ctx.fillStyle = '#28a745';
+            ctx.fillRect(food.x, food.y, boxSize, boxSize);
+
+            let snakeX = snake[0].x;
+            let snakeY = snake[0].y;
+
+            if (dir === 'LEFT') snakeX -= boxSize;
+            if (dir === 'UP') snakeY -= boxSize;
+            if (dir === 'RIGHT') snakeX += boxSize;
+            if (dir === 'DOWN') snakeY += boxSize;
+
+            // Tunelový průchod zdmi
+            if (snakeX < 0) snakeX = canvas.width - boxSize;
+            if (snakeX >= canvas.width) snakeX = 0;
+            if (snakeY < 0) snakeY = canvas.height - boxSize;
+            if (snakeY >= canvas.height) snakeY = 0;
+
+            let newHead = { x: snakeX, y: snakeY };
+
+            if (collision(newHead, snake)) {
+                clearInterval(gameInterval);
+                gameInterval = null;
+                alert('Konec hry! Tvoje skóre: ' + score);
+                startGame();
+                return;
+            }
+
+            if (snakeX === food.x && snakeY === food.y) {
+                score++;
+                document.getElementById('gameScore').textContent = score;
+                food = {
+                    x: Math.floor(Math.random() * (canvas.width / boxSize)) * boxSize,
+                    y: Math.floor(Math.random() * (canvas.height / boxSize)) * boxSize
+                };
+            } else {
+                snake.pop();
+            }
+
+            snake.unshift(newHead);
+        }
+
+        function collision(head, array) {
+            for (let i = 0; i < array.length; i++) {
+                if (head.x === array[i].x && head.y === array[i].y) return true;
+            }
+            return false;
         }
 
         function getStationId(s) {
@@ -397,7 +464,7 @@
             C_GENRES.style.display = mode==='genre' ? 'flex' : 'none';
 
             if (mode === 'fav') F_renderFavorites();
-            if (mode === 'genre') C_LIST.innerHTML = "<li>Vyberte žánr (nebo nejprve indexujte svět / načtěte CZ rádia).</li>";
+            if (mode === 'genre') C_LIST.innerHTML = "<li>Vyberte žánr (nebo načtěte CZ rádia / svět).</li>";
             if (mode === 'search') C_LIST.innerHTML = "<li>Zadejte hledaný výraz.</li>";
         }
 
@@ -411,7 +478,7 @@
                 C_LIST.innerHTML = "<li>Hledám v online databázi...</li>";
                 try {
                     for (const api of ENDPOINTS) {
-                        const res = await fetch(`${api}/stations/search?name=${encodeURIComponent(q)}&limit=50`);
+                        const res = await fetch(`${api}/stations/search?name=${encodeURIComponent(q)}&limit=150`);
                         if (res.ok) {
                             source = await res.json();
                             break;
@@ -424,7 +491,7 @@
                 return (s.name||"").toLowerCase().includes(q)
                     || (s.country||"").toLowerCase().includes(q)
                     || (s.tags||"").toLowerCase().includes(q);
-            }).slice(0,100);
+            }).slice(0,150);
 
             CACHE.currentList = res;
             if (!res.length) {
@@ -436,25 +503,49 @@
 
         async function F_loadCZ() {
             IS_WORLD_OPEN = false;
-            C_GENRES.style.display = 'none';
-            
             if (IS_CZ_OPEN) {
                 C_LIST.innerHTML = "";
+                C_GENRES.style.display = 'none';
                 IS_CZ_OPEN = false;
                 return;
             }
 
-            C_LIST.innerHTML = "<li>Načítám...</li>";
+            C_LIST.innerHTML = "<li>🇨🇿 Načítám česká rádia (150+)...</li>";
+            C_GENRES.style.display = 'none';
 
+            let data = [];
             try {
-                const res = await fetch(`${ENDPOINTS[0]}/stations/bycountrycodeexact/CZ`);
-                const data = await res.json();
-                const filtered = data.filter(s => !s.name.toLowerCase().includes("abdul")).slice(0,50);
+                for (const api of ENDPOINTS) {
+                    try {
+                        const res = await fetch(`${api}/stations/bylanguage/czech?limit=200`);
+                        if (res.ok) {
+                            data = await res.json();
+                            break;
+                        }
+                    } catch(err) {}
+                }
+                if (!data.length) {
+                    for (const api of ENDPOINTS) {
+                        try {
+                            const res = await fetch(`${api}/stations/bycountrycodeexact/CZ?limit=200`);
+                            if (res.ok) {
+                                data = await res.json();
+                                break;
+                            }
+                        } catch(err) {}
+                    }
+                }
+
+                const filtered = data
+                    .filter(s => !s.name.toLowerCase().includes("abdul"))
+                    .sort((a, b) => (b.clickcount || 0) - (a.clickcount || 0))
+                    .slice(0, 150);
+
                 CACHE.currentList = filtered;
                 F_render(filtered);
                 IS_CZ_OPEN = true;
             } catch(e) {
-                C_LIST.innerHTML = "<li>Chyba načítání</li>";
+                C_LIST.innerHTML = "<li>❌ Chyba při načítání českých stanic.</li>";
                 IS_CZ_OPEN = false;
             }
         }
@@ -462,8 +553,7 @@
         async function F_indexWorld() {
             IS_CZ_OPEN = false;
             
-            // Pokud jsou světová rádia/žánry otevřené, zavřeme je (stejně jako CZ rádia)
-            if (IS_WORLD_OPEN || (C_GENRES.style.display === 'flex' && C_GENRES.innerHTML !== '')) {
+            if (IS_WORLD_OPEN) {
                 C_GENRES.style.display = 'none';
                 C_GENRES.innerHTML = "";
                 C_LIST.innerHTML = "";
@@ -471,7 +561,7 @@
                 return;
             }
 
-            C_LIST.innerHTML = "<li>⏳ Indexuji světové stanice (20 000)...</li>";
+            C_LIST.innerHTML = "<li>⏳ Indexuji 20 000 světových stanic podle žánrů...</li>";
             C_GENRES.style.display = 'flex';
 
             let data = null;
@@ -486,7 +576,12 @@
                 if (!data) {
                     for (const api of ENDPOINTS) {
                         try {
-                            const res = await fetch(`${api}/stations/topclick/20000`);
+                            const controller = new AbortController();
+                            const timeoutId = setTimeout(() => controller.abort(), 12000);
+                            
+                            const res = await fetch(`${api}/stations/topclick/20000`, { signal: controller.signal });
+                            clearTimeout(timeoutId);
+
                             if (res.ok) {
                                 data = await res.json();
                                 break;
@@ -495,8 +590,7 @@
                     }
 
                     if (!data) {
-                        C_LIST.innerHTML = "<li>❌ Chyba indexace — žádný server neodpovídá.</li>";
-                        C_GENRES.style.display = 'none';
+                        C_LIST.innerHTML = "<li>❌ Chyba indexace — server neodpověděl včas. Zkuste to znovu.</li>";
                         return;
                     }
 
@@ -513,19 +607,18 @@
                     .map(g => `<button onclick="F_filter('${g}')">${g}</button>`)
                     .join('');
 
-                C_LIST.innerHTML = "<li>✅ Hotovo. Vyberte žánr.</li>";
+                C_LIST.innerHTML = "<li>✅ Hotovo. Vyberte žánr výše.</li>";
                 loadFavorites();
                 IS_WORLD_OPEN = true;
 
             } catch(e) {
                 C_LIST.innerHTML = "<li>❌ Chyba indexace — zkus to znovu.</li>";
-                C_GENRES.style.display = 'none';
                 IS_WORLD_OPEN = false;
             }
         }
 
         function F_filter(genre) {
-            const list = CACHE.byGenre[genre].slice(0,50);
+            const list = CACHE.byGenre[genre].slice(0,150);
             CACHE.currentList = list;
             F_render(list);
         }
@@ -580,15 +673,19 @@
                 C_TV_AREA.style.display = 'none';
                 C_TV_FRAME.src = "";
             }
-            if (C_GAME_AREA.style.display === 'block') {
-                C_GAME_AREA.style.display = 'none';
-                C_GAME_FRAME.src = "";
-            }
 
             C_PLAYER_AREA.style.display = 'block';
+            C_AUDIO.pause();
             C_AUDIO.src = url;
             C_PLAYER_LABEL.textContent = "Hraje: " + name;
-            C_AUDIO.play().catch(()=>{});
+            
+            let playPromise = C_AUDIO.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.warn("Autoplay blokován nebo chyba streamu:", error);
+                    C_PLAYER_LABEL.textContent = "Hraje: " + name + " (Klikni na play v přehrávači)";
+                });
+            }
         }
     </script>
 </body>
